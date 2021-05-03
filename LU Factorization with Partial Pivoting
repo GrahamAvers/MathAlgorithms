@@ -1,0 +1,62 @@
+%This is a matlab function that will do LU Factorization with Partial Pivoting
+
+function[LowerBoi,UpperBoi,pivotee]=luFactor(A)
+% luFactor(A)
+%	LU decomposition with pivotiing
+% inputs:
+%	A = coefficient matrix
+% outputs:
+%	L = lower triangular matrix
+%	U = upper triangular matrix
+%       P = the permutation matrix
+
+%number of columns = length(A)
+%number of rows = size(A,1)
+
+
+n=length(A)
+n=size(A,1)
+if(length(A)~=size(A,1))
+    error("this array is not a sqare");
+end
+if(all(A)==0)
+    error("this array is all 0's");
+end
+if(size(A,1)==1)
+    error("this array does not require LU Factorization to solve");
+end
+L=[];
+U=[];
+p=[];
+LowerBoi=eye(n); %makes an identity matrix of length n 
+pivotee=LowerBoi; %makes pivot matrix, this should stay the same if no pivoting involved
+UpperBoi=A;       %upper matrix starts out as the unmodified matrix we are given
+for (k=1:n)
+    [x m]=max(abs(UpperBoi(k:n,k))) % x=position maximum value is in, m = value with largest magnitude
+    m=m+k-1;                        
+    if (m~=k)                         %
+        
+        temp=UpperBoi(k,:);
+        UpperBoi(k,:)=UpperBoi(m,:);     % switch rows m and k in Upper matrix
+        UpperBoi(m,:)=temp;
+
+% ::::::         Spacer        :::::::
+
+        temp=pivotee(k,:);
+        pivotee(k,:)=pivotee(m,:);     % switch rows m and k in the pivot matrix
+        pivotee(m,:)=temp;
+        if (k>=2)
+            temp=LowerBoi(k,1:k-1);
+            LowerBoi(k,1:k-1)=LowerBoi(m,1:k-1);
+            LowerBoi(m,1:k-1)=temp;
+        end
+    end
+    
+% ::::::::        Spacer          :::::::::
+
+    for (j=k+1:n)
+        LowerBoi(j,k)=UpperBoi(j,k)/UpperBoi(k,k);                      %does a11/a21, a21/a31, etc and stores in lowerBoi
+        UpperBoi(j,:)=UpperBoi(j,:)-LowerBoi(j,k)*UpperBoi(k,:);        %multiplies upperBoi column by a11/a21, a21/a31, etc 
+    end
+end
+end
