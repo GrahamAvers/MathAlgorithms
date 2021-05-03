@@ -1,0 +1,62 @@
+%This is a matlab function that will estimate that integral of a line given data points. 
+%If it there is an odd number of data points, the trapezoidal rule will be used for the last point
+
+function [I] = Simpson(x, y)
+% Numerical evaluation of integral by Simpson's 1/3 Rule
+% Inputs
+%   x = the vector of equally spaced independent variable
+%   y = the vector of function values with respect to x
+% Outputs:
+%   I = the numerical integral calculated
+if(length(x)~=length(y))
+    error("x and y vectors are not equal in length");
+end
+xx=x;
+test=x(2:end)-x(1:end-1)
+diff(x)
+%if(diff(test)~=0)
+ %   error("X values are not evenly spaced");
+%end
+for(z=1:length(test)-1)
+    if(test(z)~=test(z+1))
+        error("X values are not equally spaced, thus it is impossible to perform the simpson's 1/3rd rule.");
+    end
+end
+
+num3=false;
+    if(length(x)==3)                          %special case with simpsons rule, only odd amount of values that work with simpsons rule.
+        fx0=y(1);
+        fx1=y(2);
+        fx2=y(3);
+        I=((x(3)-x(1)))*((fx0+4*fx1+fx2)/6);
+        num3=true
+    end
+
+    if(length(x)==2)                        %special case with trapezoidal rule, only even amount of values that work with trapezoidal rule. 
+        warning("Unable to perform Simpsons 1/3rd rule, performing trapzeoidal rule");
+        fx0=y(1);
+        fx1=y(2);
+        I=(x(2)-x(1))*((fx0+fx1)/2);
+        num3=true
+    end
+
+
+    if((rem(length(x),2) == 0) && (num3==false))               % determine if number of data points is even, if so use simpson's 1/3rd rule
+            fx0=y(1);
+            fx1=y(length(y)/2);
+            fx2=y(length(y));
+            I=((x(length(x))-x(1)))*((fx0+4*fx1+fx2)/(6));
+            
+    end
+    
+
+    
+    if((rem(length(x),2) == 1) && (num3==false))               % determine if number of data points is odd, if so use trapezoidal rule for last segment
+        warning("Uneven number of data points, trapezoidal rule to be used on final segment");
+        fx0=y(1);
+        fx1=y((length(y)-1)/2);
+        fx2=y(length(y)-1);
+        I=((x(length(x)-1)-x(1))*((fx0+4*fx1+fx2)/6)) + (x(length(x))-x(length(x)-1))*(y(length(y-1))+y(length(y)))/2;
+    end
+    
+end
