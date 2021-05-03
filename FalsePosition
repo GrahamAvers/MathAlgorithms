@@ -1,0 +1,45 @@
+%This is a MATLAB function that uses false position to estimate the root of a function
+
+function [root, fx, ea, iter] = falsePosition(func, xl, xu, es, maxit, varargin)
+    old=xl;
+    iter=0;
+    ea=100;
+    xr=0;
+    root=0;
+    if nargin<4                           %use nargin to fill es and maxit if not supplied
+        es=.00001;
+        maxit=200;
+    end
+    if nargin<5 && nargin>3
+            es=.00001;
+    end
+    if nargin<3                              %run error if less than 3 inputs are given, cant default upper, lower, or function
+            error("Not enough input args")
+    end
+    %stopper=false;
+        if(func(xl)*func(xu)>0)              %if values multipled > 0 end function
+            iter=200
+            xr=0
+        end
+    while(ea>es || iter<maxit)                               %run falseposition method until estimated error <= es, or maxit is reached
+        xr=xu-(func(xu)*(xl-xu)/(func(xl)-func(xu)))
+        if(func(xl)*func(xu)<0)
+            xl=xr;
+        end
+        if(ea==Inf)
+            ea=0                                               %condition for first guess being root
+            xr=0
+            break
+        end
+        ea=round(abs(((xr-old)/xr)*100),6)                    %rounding approx error and making it positive
+        old=xr;
+        iter=iter+1;
+        if(ea==0)                                             %checking if error reached
+            iter=iter-1
+            break
+        end
+    end
+    root=xr
+    fx=func(xr)                                               %finalizing values
+    iter
+end
